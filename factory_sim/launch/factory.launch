@@ -11,7 +11,7 @@
         <arg name="y_pos" default="0.0"/>
         <arg name="z_pos" default="0.0"/>
 
-        <arg name="map_file" default="$(find turtlebot3_navigation)/maps/map.yaml"/>
+        <arg name="map_file" default="$(find factory_sim)/maps/map.yaml"/>
 
         <!-- include gazebo_ros launcher -->
         <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -32,24 +32,14 @@
                 </node>
         </group>
 
-        <arg name="robot1" value="robot1" />
-        <group ns="$(arg robot1)">
-                <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro ns:=$(arg robot1)" />
-                <node pkg="gazebo_ros" type="spawn_model" name="spawn_robot" args="-urdf -model turtlebot3_$(arg model)_$(arg robot1) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
-                <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
-                        <param name="tf_prefix" value="$(arg robot1)" />
-                </node>
-
-                <include file="$(find factory_sim)/launch/robot_navigation.launch">
-                        <arg name="robot_name" value="$(arg robot1)" />
-                        <arg name="map_file" value="$(arg map_file)" />
-                </include>
-        </group>
+        <node name="costmap_generator" pkg="factory_sim" type="costmap_generator" output="screen">
+                <rosparam file="$(find factory_sim)/config/costmap_params.yaml" command="load" ns="costmap/obstacles" />
+        </node>
 
         <!-- Map server -->
         <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
 
         <node pkg="tf" type="static_transform_publisher" name="sensor_link_broadcaster" args="0 0 0 0 0 0 world map 100" />
         <node pkg="rviz" type="rviz" name="rviz" required="true"
-                args="-d $(find turtlebot3_navigation)/rviz/turtlebot3_navigation.rviz"/>
+                args="-d $(find factory_sim)/rviz/costmap.rviz"/>
 </launch>
