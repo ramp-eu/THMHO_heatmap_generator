@@ -4,13 +4,14 @@ project(factory_sim)
 find_package(catkin REQUIRED
     COMPONENTS
         costmap_2d
+        nav_msgs
         roscpp
         tf
 )
 
 catkin_package(
     INCLUDE_DIRS include
-    CATKIN_DEPENDS costmap_2d roscpp tf
+    CATKIN_DEPENDS nav_msgs costmap_2d roscpp tf
 )
 
 include_directories(
@@ -23,7 +24,16 @@ target_link_libraries(costmap_generator
   ${catkin_LIBRARIES}
 )
 
+add_executable(costmap_aggregator src/costmap_aggregator.cpp)
+target_link_libraries(costmap_aggregator
+  ${catkin_LIBRARIES}
+)
+
 install(TARGETS costmap_generator costmap_generator
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(TARGETS costmap_aggregator costmap_aggregator
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
