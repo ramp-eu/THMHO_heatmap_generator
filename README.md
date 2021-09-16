@@ -12,12 +12,18 @@ git clone git@github.com:ipa320/betterfactory_sim.git
 cd ~/betterfactory_ws
 rosdep update
 rosdep install --from-paths src --ignore-src -r -y
+catkin config --install
 catkin build
-source ~/betterfactory_ws
+source ~/betterfactory_ws/install/setup.bash
 ```
 
 ## Usage
 
+with gazebo:
 ```
-roslaunch factory_sim factory.launch --screen map_file:=~/betterfactory_ws/src/betterfactory_sim/factory_sim/maps/map.yaml
+roslaunch factory_sim factory.launch sim:=true  
+```
+with real laser scanners:
+```
+roslaunch factory_sim factory.launch sim:=false
 ```
