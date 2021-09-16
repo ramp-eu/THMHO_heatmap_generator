@@ -79,7 +79,7 @@ Visualization Manager:
       Draw Behind: false
       Enabled: true
       Name: Heatmap
-      Topic: /heatmap
+      Topic: /heatmap_generator/heatmap
       Unreliable: false
       Use Timestamp: false
       Value: true
