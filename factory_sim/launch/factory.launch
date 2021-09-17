@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-        <!-- overwriting these args -->
+        <arg name="sim" default="false" />
         <arg name="debug" default="false" />
         <arg name="gui" default="true" />
         <arg name="pause" default="false" />
@@ -11,33 +11,47 @@
         <arg name="y_pos" default="0.0"/>
         <arg name="z_pos" default="0.0"/>
 
-        <arg name="map_file" default="$(find factory_sim)/maps/map.yaml"/>
+        <arg name="sim_map_file" default="$(find factory_sim)/maps/map.yaml"/>
+        <arg name="real_map_file" default="$(find factory_sim)/maps/lowres_map.yaml"/>
 
-        <!-- include gazebo_ros launcher -->
-        <include file="$(find gazebo_ros)/launch/empty_world.launch">
-                <arg name="world_name" value="$(arg world)" />
-                <arg name="debug" value="$(arg debug)" />
-                <arg name="gui" value="$(arg gui)" />
-                <arg name="paused" value="$(arg pause)" />
-                <arg name="use_sim_time" value="true" />
-        </include>
+        <group if="$(arg sim)">
+                <!-- include gazebo_ros launcher -->
+                <include file="$(find gazebo_ros)/launch/empty_world.launch">
+                        <arg name="world_name" value="$(arg world)" />
+                        <arg name="debug" value="$(arg debug)" />
+                        <arg name="gui" value="$(arg gui)" />
+                        <arg name="paused" value="$(arg pause)" />
+                        <arg name="use_sim_time" value="true" />
+                </include>
 
-        <!--Sensor Description from URDF-->
-        <group ns="sensors">
-                <param name="robot_description" command="$(find xacro)/xacro --inorder $(find factory_sim)/urdf/lab.xacro"/>
-                <param name="use_gui" value="true"/>
-                <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model lab_model" output="screen"/>
-                <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
-                        <param name="tf_prefix" value="sensors" />
+                <!--Sensor Description from URDF-->
+                <group ns="sensors">
+                        <param name="robot_description" command="$(find xacro)/xacro --inorder $(find factory_sim)/urdf/lab.xacro"/>
+                        <param name="use_gui" value="true"/>
+                        <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model lab_model" output="screen"/>
+                        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+                                <param name="tf_prefix" value="sensors" />
+                        </node>
+                </group>
+
+                <!-- Map server -->
+                <node pkg="map_server" name="map_server" type="map_server" args="$(arg sim_map_file)"/>
+
+                <node name="costmap_generator" pkg="factory_sim" type="costmap_generator" output="screen">
+                        <rosparam file="$(find factory_sim)/config/costmap_params_sim.yaml" command="load" ns="costmap/obstacles" />
                 </node>
         </group>
+        <group unless="$(arg sim)">
+                <node name="costmap_generator" pkg="factory_sim" type="costmap_generator" output="screen">
+                        <rosparam file="$(find factory_sim)/config/costmap_params.yaml" command="load" ns="costmap/obstacles" />
+                </node>
+                <!-- Map server -->
+                <node pkg="map_server" name="map_server" type="map_server" args="$(arg real_map_file)"/>
+        </group>
 
-        <node name="costmap_generator" pkg="factory_sim" type="costmap_generator" output="screen">
-                <rosparam file="$(find factory_sim)/config/costmap_params.yaml" command="load" ns="costmap/obstacles" />
+        <node name="heatmap_generator" pkg="factory_sim" type="heatmap_generator" output="screen">
+                <param name="aggregation_time" value="3600" />
         </node>
-
-        <!-- Map server -->
-        <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
 
         <node pkg="tf" type="static_transform_publisher" name="sensor_link_broadcaster" args="0 0 0 0 0 0 world map 100" />
         <node pkg="rviz" type="rviz" name="rviz" required="true"

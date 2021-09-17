@@ -7,10 +7,12 @@
 class CostmapAggregator{
 
 public:
-    CostmapAggregator() : seq_(0), num_scans_(0)
+    CostmapAggregator() : nh_("~"), seq_(0), num_scans_(0)
     {
-        heatmap_pub_ = nh_.advertise<nav_msgs::OccupancyGrid>("/heatmap", 1000);
-        timer_ = nh_.createTimer(ros::Duration(60.0), &CostmapAggregator::publishHeatmap, this);
+        int aggregation_time;
+        nh_.param("aggregation_time", aggregation_time, 3600);
+        heatmap_pub_ = nh_.advertise<nav_msgs::OccupancyGrid>("heatmap", 1000);
+        timer_ = nh_.createTimer(ros::Duration(aggregation_time), &CostmapAggregator::publishHeatmap, this);
         costmap_sub_ = nh_.subscribe("/costmap_generator/costmap/costmap", 10, &CostmapAggregator::costmapCallback, this);
         occupancy_grid_ = boost::make_shared<nav_msgs::OccupancyGrid>();
     }
