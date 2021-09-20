@@ -9,7 +9,7 @@ markdown_extensions: [toc,fenced_code]
 use_directory_urls: false
 theme: readthedocs
 pages:
-  - Home: 'README.md'
+  - Home: '../README.md'
   - 'Getting Started' : 'getting-started.md'
   - 'User & Programmers Manual':
     - 'Architecture' : 'architecture.md'
