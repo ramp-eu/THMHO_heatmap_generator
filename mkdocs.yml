@@ -7,7 +7,7 @@ site_dir: html
 markdown_extensions: [toc,fenced_code]
 use_directory_urls: false
 theme: readthedocs
-pages:
+nav:
   - Home: 'README.md'
   - 'Getting Started' : 'getting-started.md'
   - 'User & Programmers Manual':
