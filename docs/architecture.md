@@ -1,1 +1,3 @@
-architecture.md
+# Architecture
+
+![architecture](images/architecture.png)
