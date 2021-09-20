@@ -1,6 +1,6 @@
 site_name: THMHO Heatmap Generator
-site_url: https://github.com/ramp-eu/THMHO_heatmap_generator
-repo_url: https://github.com/ramp-eu/THMHO_heatmap_generator
+site_url: https://github.com/ipa320/THMHO_heatmap_generator
+repo_url: https://github.com/ipa320/THMHO_heatmap_generator
 site_description: THMHO Heatmap Generator Documentation
 docs_dir: docs
 site_dir: html
