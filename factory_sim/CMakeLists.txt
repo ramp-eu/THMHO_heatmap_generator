@@ -27,6 +27,9 @@ target_link_libraries(heatmap_generator
   ${catkin_LIBRARIES}
 )
 
+catkin_install_python(PROGRAMS scripts/costmap_saver
+                      DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 install(TARGETS costmap_generator costmap_generator
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
